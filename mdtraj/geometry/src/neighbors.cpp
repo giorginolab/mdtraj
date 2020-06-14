@@ -1,6 +1,6 @@
 #include <cmath>
 #include <vector>
-#include <pmmintrin.h>
+
 #include "msvccompat.h"
 #include "vectorize_sse.h"
 #include "neighbors.hpp"

@@ -22,7 +22,6 @@
 #define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
 #define CLIP(X, X_min, X_max) (MIN(MAX(X, X_min), X_max))
 
-#include <pmmintrin.h>
 #include "msvccompat.h"
 #include <math.h>
 

@@ -49,7 +49,7 @@
 #define _SSE_SWIZZLE_H_
 #include "msvccompat.h"
 #include <emmintrin.h>
-#ifdef __SSE2__
+#if defined(__SSE2__) || defined(NO_WARN_X86_INTRINSICS)
 static INLINE __m128  _mm_swizzle_ps_xxxx(__m128 reg)      {  return CAST__M128(_mm_shuffle_epi32(CAST__M128I(reg), 0x00)); }
 static INLINE __m128  _mm_swizzle_ps_xxxy(__m128 reg)      {  return CAST__M128(_mm_shuffle_epi32(CAST__M128I(reg), 0x40)); }
 static INLINE __m128  _mm_swizzle_ps_xxxz(__m128 reg)      {  return CAST__M128(_mm_shuffle_epi32(CAST__M128I(reg), 0x80)); }

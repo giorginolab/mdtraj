@@ -26,7 +26,7 @@
 #include "vectorize_sse.h"
 #include "msvccompat.h"
 #include "moments.h"
-#include <pmmintrin.h>
+// #include <pmmintrin.h>
 #include "math_patch.h"
 
 void drid_moments(float* coords, int32_t index, int32_t* partners, int32_t n_partners, double* moments)

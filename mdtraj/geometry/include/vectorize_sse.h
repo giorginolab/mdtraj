@@ -32,8 +32,46 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.                                     *
  * -------------------------------------------------------------------------- */
 
-#include <pmmintrin.h>
+#ifdef SIMDE_ENABLE_NATIVE_ALIASES
+//#include <simde/x86/sse3.h>
+#include <simde/x86/sse4.1.h>
 
+// Use SIMDE emulation instead of the old SSEPlus one
+
+static inline __m128 _mm_hsum_ps(__m128 v) {
+    v = _mm_hadd_ps(v, v);
+    v = _mm_hadd_ps(v, v);
+    return v;
+}
+
+static inline __m128 _mm_round_ps2(const __m128 a) {
+    /* http://dss.stephanierct.com/DevBlog/?p=8 */
+    __m128 v0 = _mm_setzero_ps();             /* generate the highest value < 2 */
+    __m128 v1 = _mm_cmpeq_ps(v0,v0);
+    __m128i srli = _mm_srli_epi32( *(__m128i*)& v1, 2);
+    __m128 vNearest2 = *(__m128*)& srli;
+    __m128i i = _mm_cvttps_epi32(a);
+    __m128 aTrunc = _mm_cvtepi32_ps(i);        /* truncate a */
+    __m128 rmd = _mm_sub_ps(a, aTrunc);        /* get remainder */
+    __m128 rmd2 = _mm_mul_ps( rmd, vNearest2); /* mul remainder by near 2 will yield the needed offset */
+    __m128i rmd2i = _mm_cvttps_epi32(rmd2);    /* after being truncated of course */
+    __m128 rmd2Trunc = _mm_cvtepi32_ps(rmd2i);
+    __m128 r =_mm_add_ps(aTrunc, rmd2Trunc);
+    return r;
+}
+
+
+inline __m128 _mm_floor_ps2(const __m128& x) {
+  return _mm_floor_ps(x);
+}
+
+static inline __m128 _mm_dp_ps2( __m128 a, __m128 b, const int mask ) {
+  return _mm_dp_ps(a, b, mask);
+}
+
+
+#else
+#include <pmmintrin.h>
 
 /* Macros from http://sseplus.sourceforge.net/_s_s_e_plus__platform_8h-source.html */
 #ifdef _MSC_VER
@@ -121,6 +159,7 @@ static inline __m128 _mm_dp_ps2( __m128 a, __m128 b, const int mask ) {
     return a;
 }
 
+#endif
 // This file defines classes and functions to simplify vectorizing code with SSE.
 
 class ivec4;

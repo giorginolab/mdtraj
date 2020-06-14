@@ -57,7 +57,8 @@ class CompilerDetection(object):
             self.compiler_args_sse3 = []
             self.compiler_args_warn = []
         else:
-            self.compiler_args_sse2 = ['-msse2'] if self.sse2_enabled else ["-DSIMDE_ENABLE_NATIVE_ALIASES", "-Isimde"]
+            # If sse2 is not enabled (likely Power architecture), use X86 intrinsics and SIMDE emulation
+            self.compiler_args_sse2 = ['-msse2'] if self.sse2_enabled else ["-DNO_WARN_X86_INTRINSICS", "-DSIMDE_ENABLE_NATIVE_ALIASES", "-Isimde"]
             self.compiler_args_sse3 = ['-mssse3'] if self.sse3_enabled else []
             self.compiler_args_warn = ['-Wno-unused-function', '-Wno-unreachable-code', '-Wno-sign-compare']
 
