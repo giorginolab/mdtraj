@@ -48,12 +48,18 @@ class CompilerDetection(object):
             self.openmp_enabled = False
         else:
             self.openmp_enabled, openmp_needs_gomp = self._detect_openmp()
+        self.sse2_enabled = self._detect_sse2() if not self.msvc else True
         self.sse3_enabled = self._detect_sse3() if not self.msvc else True
         self.sse41_enabled = self._detect_sse41() if not self.msvc else True
 
-        self.compiler_args_sse2 = ['-msse2'] if not self.msvc else ['/arch:SSE2']
-        self.compiler_args_sse3 = ['-mssse3'] if (self.sse3_enabled and not self.msvc) else []
-        self.compiler_args_warn = ['-Wno-unused-function', '-Wno-unreachable-code', '-Wno-sign-compare'] if not self.msvc else []
+        if self.msvc:
+            self.compiler_args_sse2 = ['/arch:SSE2']
+            self.compiler_args_sse3 = []
+            self.compiler_args_warn = []
+        else:
+            self.compiler_args_sse2 = ['-msse2'] if self.sse2_enabled else ["-DSIMDE_ENABLE_NATIVE_ALIASES", "-Isimde"]
+            self.compiler_args_sse3 = ['-mssse3'] if self.sse3_enabled else []
+            self.compiler_args_warn = ['-Wno-unused-function', '-Wno-unreachable-code', '-Wno-sign-compare']
 
         self.compiler_args_sse41, self.define_macros_sse41 = [], []
         if self.sse41_enabled:
@@ -171,6 +177,15 @@ exit(status)
             needs_gomp = hasopenmp
         self._print_support_end('OpenMP', hasopenmp)
         return hasopenmp, needs_gomp
+
+    def _detect_sse2(self):
+        "Does this compiler support SSE2 intrinsics?"
+        self._print_support_start('SSE2')
+        result = self.hasfunction('__m128d v; _mm_add_pd(v,v)',
+                           include='<emmintrin.h>',
+                           extra_postargs=['-msse2'])
+        self._print_support_end('SSE2', result)
+        return result
 
     def _detect_sse3(self):
         "Does this compiler support SSE3 intrinsics?"
