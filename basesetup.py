@@ -51,14 +51,18 @@ class CompilerDetection(object):
         self.sse2_enabled = self._detect_sse2() if not self.msvc else True
         self.sse3_enabled = self._detect_sse3() if not self.msvc else True
         self.sse41_enabled = self._detect_sse41() if not self.msvc else True
+        self.altivec_enabled = self._detect_altivec() if not self.msvc else True
 
         if self.msvc:
             self.compiler_args_sse2 = ['/arch:SSE2']
             self.compiler_args_sse3 = []
             self.compiler_args_warn = []
         else:
-            # If sse2 is not enabled (likely Power architecture), use X86 intrinsics and SIMDE emulation
+            # Kludges for sse2 not enabled case (likely Power
+            # architecture): use X86 intrinsics and SIMDE emulation,
+            # with optional Altivec if available
             self.compiler_args_sse2 = ['-msse2'] if self.sse2_enabled else ["-DNO_WARN_X86_INTRINSICS", "-DSIMDE_ENABLE_NATIVE_ALIASES", "-Isimde"]
+            if self.altivec_enabled: self.compiler_args_sse2.append('-maltivec') # dirty
             self.compiler_args_sse3 = ['-mssse3'] if self.sse3_enabled else []
             self.compiler_args_warn = ['-Wno-unused-function', '-Wno-unreachable-code', '-Wno-sign-compare']
 
@@ -204,6 +208,15 @@ exit(status)
                            include='<smmintrin.h>',
                            extra_postargs=['-msse4'])
         self._print_support_end('SSE4.1', result)
+        return result
+
+    def _detect_altivec(self):
+        "Does this compiler support Altivec intrinsics?"
+        self._print_support_start('Altivec')
+        result = self.hasfunction('vector signed int one = (vector signed int) {1,2,3,4}',
+                           include='<altivec.h>',
+                           extra_postargs=['-maltivec'])
+        self._print_support_end('Altivec', result)
         return result
 
 ################################################################################
