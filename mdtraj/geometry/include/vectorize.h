@@ -34,6 +34,8 @@
 
 #if defined(__ARM_NEON)
     #include "vectorize_neon.h"
+#elif defined(USE_SIMDE)
+    #include "vectorize_simde.h"
 #else
     #include <pmmintrin.h>
     #include "vectorize_sse.h"

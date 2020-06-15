@@ -51,6 +51,7 @@ class CompilerDetection(object):
         self.sse3_enabled = self._detect_sse3() if not self.msvc else True
         self.sse41_enabled = self._detect_sse41() if not self.msvc else True
         self.neon_enabled = self._detect_neon() if not self.msvc else False        
+        self.altivec_enabled = self._detect_altivec() if not self.msvc else True
 
         self.compiler_args_sse2 = ['-msse2'] if not self.msvc else ['/arch:SSE2']
         self.compiler_args_sse3 = ['-mssse3'] if (self.sse3_enabled and not self.msvc) else []
@@ -59,6 +60,10 @@ class CompilerDetection(object):
 
         if self.neon_enabled:
             self.compiler_args_sse2 = []
+            self.compiler_args_sse3 = []
+
+        if self.altivec_enabled:
+            self.compiler_args_sse2 = ["-DUSE_SIMDE", "-Isimde", "-DSIMDE_ENABLE_NATIVE_ALIASES"]
             self.compiler_args_sse3 = []
 
         self.compiler_args_sse41, self.define_macros_sse41 = [], []
@@ -202,6 +207,15 @@ exit(status)
         self._print_support_start("NEON")
         result = self.hasfunction("int16x4_t acc = vdup_n_s16(0);", include="<arm_neon.h>")
         self._print_support_end("NEON", result)
+        return result
+
+    def _detect_altivec(self):
+        "Does this compiler support Altivec intrinsics?"
+        self._print_support_start('Altivec')
+        result = self.hasfunction('vector signed int one = (vector signed int) {1,2,3,4}',
+                           include='<altivec.h>',
+                           extra_postargs=['-maltivec'])
+        self._print_support_end('Altivec', result)
         return result
 
 ################################################################################

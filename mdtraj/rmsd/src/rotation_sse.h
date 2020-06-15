@@ -23,7 +23,7 @@
 #include "stdio.h"
 #include <assert.h>
 #include "msvccompat.h"
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON) || defined(USE_SIMDE)
 #include "util_arm.h"
 #else
 #include "util_sse.h"

@@ -39,8 +39,11 @@
 float msdFromMandG(const float M[9], const float G_x, const float G_y,
                    const int numAtoms, int computeRot, float rot[9]);
 
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON)
 #include <arm_neon.h>
+#include "theobald_rmsd_arm.h"
+#elif defined(USE_SIMDE)
+#include <simde/arm/neon.h>
 #include "theobald_rmsd_arm.h"
 #else
 #include "theobald_rmsd_sse.h"

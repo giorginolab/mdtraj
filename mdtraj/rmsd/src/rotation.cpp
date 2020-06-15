@@ -1,5 +1,5 @@
 #include "rotation.h"
-#ifdef __ARM_NEON
+#if defined(__ARM_NEON) || defined(USE_SIMDE)
 #include "rotation_arm.h"
 #else
 #include "rotation_sse.h"

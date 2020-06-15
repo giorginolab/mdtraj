@@ -1,4 +1,10 @@
+#if defined(__ARM_NEON)
 #include <arm_neon.h>
+#elif defined(USE_SIMDE)
+#include <simde/arm/neon.h>
+#else
+#error "Shouldnt happen"
+#endif
 
 
 static INLINE void aos_interleaved_store(float* p, float32x4_t x, float32x4_t y, float32x4_t z) {    
