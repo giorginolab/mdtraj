@@ -6,10 +6,21 @@
     Common intrinsic subroutines shared among files.
 */
 #include "msvccompat.h"
+
+#ifdef USE_SIMDE
+#include <simde/x86/sse2.h>
+// Overwrite native macros which were not working for some weird ‘_Generic’ specifies two compatible types
+#define _mm_store_ps simde_mm_store_ps
+#define _mm_storeu_ps simde_mm_storeu_ps
+#define _mm_store_ss simde_mm_store_ss
+#else
 #include <xmmintrin.h>
+#endif
+
 #ifdef __SSSE3__
 #include <pmmintrin.h>
 #endif
+
 #include "sse_swizzle.h"
 
 static INLINE void aos_interleaved_storeu(float* p, __m128 x, __m128 y, __m128 z)

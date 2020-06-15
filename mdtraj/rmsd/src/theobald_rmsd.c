@@ -35,7 +35,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
-#include <xmmintrin.h>
+
 #ifdef __SSE3__
 #include <pmmintrin.h>
 #endif

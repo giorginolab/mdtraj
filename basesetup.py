@@ -61,7 +61,7 @@ class CompilerDetection(object):
             # Kludges for sse2 not enabled case (likely Power
             # architecture): use X86 intrinsics and SIMDE emulation,
             # with optional Altivec if available
-            self.compiler_args_sse2 = ['-msse2'] if self.sse2_enabled else ["-DNO_WARN_X86_INTRINSICS", "-DSIMDE_ENABLE_NATIVE_ALIASES", "-Isimde"]
+            self.compiler_args_sse2 = ['-msse2'] if self.sse2_enabled else ["-DUSE_SIMDE","-DSIMDE_ENABLE_NATIVE_ALIASES", "-Isimde"]
             if self.altivec_enabled: self.compiler_args_sse2.append('-maltivec') # dirty
             self.compiler_args_sse3 = ['-mssse3'] if self.sse3_enabled else []
             self.compiler_args_warn = ['-Wno-unused-function', '-Wno-unreachable-code', '-Wno-sign-compare']
