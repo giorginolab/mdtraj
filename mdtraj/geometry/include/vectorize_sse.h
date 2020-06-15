@@ -32,7 +32,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.                                     *
  * -------------------------------------------------------------------------- */
 
-#ifdef SIMDE_ENABLE_NATIVE_ALIASES
+#ifdef USE_SIMDE
 //#include <simde/x86/sse3.h>
 #include <simde/x86/sse4.1.h>
 
